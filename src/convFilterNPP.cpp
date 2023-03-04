@@ -47,6 +47,8 @@
 #include <helper_cuda.h>
 #include <helper_string.h>
 
+#include <chrono> // Add timing
+
 bool printfNPPinfo(int argc, char *argv[])
 {
   const NppLibraryVersion *libVer = nppGetLibVersion();
@@ -127,82 +129,88 @@ int main(int argc, char *argv[])
       exit(EXIT_FAILURE);
     }
 
-    std::string sResultFilename = sFilename;
-
-    std::string::size_type dot = sResultFilename.rfind('.');
-
-    if (dot != std::string::npos)
+    // Loop over the value of conv kernel, generate different results.
+    for (int convValue = 1; convValue < 15; convValue++)
     {
-      sResultFilename = sResultFilename.substr(0, dot);
+      std::string sResultFilename = sFilename;
+
+      std::string::size_type dot = sResultFilename.rfind('.');
+
+      if (dot != std::string::npos)
+      {
+        sResultFilename = sResultFilename.substr(0, dot);
+      }
+
+      sResultFilename += "_convFilter_" + std::to_string(convValue) + ",1.pgm";
+
+      if (checkCmdLineFlag(argc, (const char **)argv, "output"))
+      {
+        char *outputFilePath;
+        getCmdLineArgumentString(argc, (const char **)argv, "output",
+                                &outputFilePath);
+        sResultFilename = outputFilePath;
+      }
+
+      // declare a host image object for an 8-bit grayscale image
+      npp::ImageCPU_8u_C1 oHostSrc;
+      // load gray-scale image from disk
+      npp::loadImage(sFilename, oHostSrc);
+      // declare a device image and copy construct from the host image,
+      // i.e. upload host to device
+      npp::ImageNPP_8u_C1 oDeviceSrc(oHostSrc);
+
+      // Start the timer for recording processing times
+      auto timerStart = std::chrono::high_resolution_clock::now();
+
+      // create struct with box-filter mask size
+      NppiSize oMaskSize = {5, 5};
+
+      NppiSize oSrcSize = {(int)oDeviceSrc.width(), (int)oDeviceSrc.height()};
+      NppiPoint oSrcOffset = {0, 0};
+
+      // create struct with ROI size
+      NppiSize oSizeROI = {(int)oDeviceSrc.width(), (int)oDeviceSrc.height()};
+      // allocate device image of appropriately reduced size
+      npp::ImageNPP_8u_C1 oDeviceDst(oSizeROI.width, oSizeROI.height);
+      // set anchor point inside the mask to (oMaskSize.width / 2,
+      // oMaskSize.height / 2) It should round down when odd
+      NppiPoint oAnchor = {oMaskSize.width / 2, oMaskSize.height / 2};
+     
+      // Try to change these values to see the difference
+      npp::ImageCPU_32s_C1 hostKernel(5,5);
+      for(int x = 0 ; x < 5; x++){
+          for(int y = 0 ; y < 5; y++){
+              hostKernel.pixels(x,y)[0].x = convValue;
+          }
+      }
+      // Set the middle pixel to be least weight.
+      hostKernel.pixels(3,3)[0].x = 1;
+      // Create device side kernel
+      npp::ImageNPP_32s_C1 pKernel(hostKernel);
+
+      // We now use Convolution fileter!
+      NPP_CHECK_NPP(nppiFilter_8u_C1R(
+          oDeviceSrc.data(), oDeviceSrc.pitch(),
+          oDeviceDst.data(), oDeviceDst.pitch(), oSizeROI,
+          pKernel.data(),
+          oMaskSize, oAnchor, 25));
+
+      // declare a host image for the result
+      npp::ImageCPU_8u_C1 oHostDst(oDeviceDst.size());
+      // and copy the device result data into it
+      oDeviceDst.copyTo(oHostDst.data(), oHostDst.pitch());
+
+      auto timerStop = std::chrono::high_resolution_clock::now();
+      auto duration = std::chrono::duration_cast<std::chrono::milliseconds>(timerStop - timerStart);
+      std::cout << "Iteration " << convValue << " takes " << duration.count() << " ms " ;
+
+      saveImage(sResultFilename, oHostDst);
+      std::cout << "Saved image: " << sResultFilename << std::endl;
+
+      // If free them now, it will only function once.
+      // nppiFree(oDeviceSrc.data());
+      // nppiFree(oDeviceDst.data());
     }
-
-    sResultFilename += "_convFilter.pgm";
-
-    if (checkCmdLineFlag(argc, (const char **)argv, "output"))
-    {
-      char *outputFilePath;
-      getCmdLineArgumentString(argc, (const char **)argv, "output",
-                               &outputFilePath);
-      sResultFilename = outputFilePath;
-    }
-
-    // declare a host image object for an 8-bit grayscale image
-    npp::ImageCPU_8u_C1 oHostSrc;
-    // load gray-scale image from disk
-    npp::loadImage(sFilename, oHostSrc);
-    // declare a device image and copy construct from the host image,
-    // i.e. upload host to device
-    npp::ImageNPP_8u_C1 oDeviceSrc(oHostSrc);
-
-    // create struct with box-filter mask size
-    NppiSize oMaskSize = {5, 5};
-
-    NppiSize oSrcSize = {(int)oDeviceSrc.width(), (int)oDeviceSrc.height()};
-    NppiPoint oSrcOffset = {0, 0};
-
-    // create struct with ROI size
-    NppiSize oSizeROI = {(int)oDeviceSrc.width(), (int)oDeviceSrc.height()};
-    // allocate device image of appropriately reduced size
-    npp::ImageNPP_8u_C1 oDeviceDst(oSizeROI.width, oSizeROI.height);
-    // set anchor point inside the mask to (oMaskSize.width / 2,
-    // oMaskSize.height / 2) It should round down when odd
-    NppiPoint oAnchor = {oMaskSize.width / 2, oMaskSize.height / 2};
-
-    // // run box filter
-    // NPP_CHECK_NPP(nppiFilterBoxBorder_8u_C1R(
-    //     oDeviceSrc.data(), oDeviceSrc.pitch(), oSrcSize, oSrcOffset,
-    //     oDeviceDst.data(), oDeviceDst.pitch(), oSizeROI, oMaskSize, oAnchor,
-    //     NPP_BORDER_REPLICATE));
-    
-    // Try to change these values to see the difference
-    npp::ImageCPU_32s_C1 hostKernel(5,5);
-    for(int x = 0 ; x < 5; x++){
-        for(int y = 0 ; y < 5; y++){
-            hostKernel.pixels(x,y)[0].x = 2;
-        }
-    }
-    // Set the middle pixel to be least weight.
-    hostKernel.pixels(3,3)[0].x = 1;
-    // Create device side kernel
-    npp::ImageNPP_32s_C1 pKernel(hostKernel);
-
-    // We now use Convolution fileter!
-    NPP_CHECK_NPP(nppiFilter_8u_C1R(
-        oDeviceSrc.data(), oDeviceSrc.pitch(),
-        oDeviceDst.data(), oDeviceDst.pitch(), oSizeROI,
-        pKernel.data(),
-        oMaskSize, oAnchor, 25));
-
-    // declare a host image for the result
-    npp::ImageCPU_8u_C1 oHostDst(oDeviceDst.size());
-    // and copy the device result data into it
-    oDeviceDst.copyTo(oHostDst.data(), oHostDst.pitch());
-
-    saveImage(sResultFilename, oHostDst);
-    std::cout << "Saved image: " << sResultFilename << std::endl;
-
-    nppiFree(oDeviceSrc.data());
-    nppiFree(oDeviceDst.data());
 
     exit(EXIT_SUCCESS);
   }
