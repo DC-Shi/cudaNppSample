@@ -19,35 +19,42 @@ Original |  <img src="./data/Lena.png"  width="40%" height="40%">
 3,3,3,3,3<br>3,3,3,3,3<br>3,3,1,3,3<br>3,3,3,3,3<br>3,3,3,3,3 |  <img src="./data/Lena_convFilter_3%2C1.png"  width="40%" height="40%">
 4,4,4,4,4<br>4,4,4,4,4<br>4,4,1,4,4<br>4,4,4,4,4<br>4,4,4,4,4 |  <img src="./data/Lena_convFilter_4%2C1.png"  width="40%" height="40%">
 
-## How to run
+## How to compile & run
 Before run the code and compile the code, please make sure FreeImage dependency has already installed.
 
-Just execute `run.sh`, it will compile and run the program, even convert final result to PNG files!
+```
+./run.sh
+```
+Just execute the above, it will compile and run the program, even convert final result to PNG files!
+
+The code is tested on [NVIDIA Jetson TX2 platform](https://developer.nvidia.com/embedded/jetson-tx2), which has 6 ARM cores as well as 256-core NVIDIA Pascal(TM) GPU.
 
 ## Code Organization
 
 ```bin/```
 This folder should hold all binary/executable code that is built automatically or manually. Executable code should have use the .exe extension or programming language-specific extension.
-Note that I included the binary of ARM, which is supposed to run on NVIDIA Jetson TX2 platform. If you have other platform, please re-build the program by running `run.sh`
+
+Note that I included the binary of ARM, which is supposed to run on NVIDIA Jetson TX2 platform(GPU arch sm_62). If you have other platform, please re-build the program by running `run.sh`
 
 ```data/```
-This folder should hold all example data in any format. If the original data is rather large or can be brought in via scripts, this can be left blank in the respository, so that it doesn't require major downloads when all that is desired is the code/structure.
+This folder contains sample input and sample output. In my experiments, `Lena.pgm` is the input image. But you can see the picture using `Lena.png`.
 
 ```lib/```
-Any libraries that are not installed via the Operating System-specific package manager should be placed here, so that it is easier for inclusion/linking.
-Note that in order to reduce the code size, I didn't include the FreeImage library here. You can get the library through the Internet.
+Contains libraries that copied from original template repo. It contains GL, UtilNPP, and various helper headers.
+
+Notice that you might need FreeImage placed in the folder if you do not have FreeImage installed on the system.
 
 ```src/```
-The source code should be placed here in a hierarchical fashion, as appropriate.
+One CPP file that handles image input, invokes NPP's API to do convolution of images, compute the image, and write to image file.
 
 ```README.md```
-This file should hold the description of the project so that anyone cloning or deciding if they want to clone this repository can understand its purpose to help with their decision.
+This documentation.
 
 ```INSTALL```
-This file should hold the human-readable set of instructions for installing the code so that it can be executed. If possible it should be organized around different operating systems, so that it can be done by as many people as possible with different constraints.
+The installation dependency library description of this repo.
 
 ```Makefile or CMAkeLists.txt or build.sh```
-There should be some rudimentary scripts for building your project's code in an automatic fashion.
+Makefile is used for making this project. You can build the binary simply by `make build`.
 
 ```run.sh```
 This script is for easy hands-on. It also included a python invokation that convert images to PNG format.
