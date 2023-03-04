@@ -19,6 +19,10 @@ Original |  <img src="./data/Lena.png"  width="40%" height="40%">
 3,3,3,3,3<br>3,3,3,3,3<br>3,3,1,3,3<br>3,3,3,3,3<br>3,3,3,3,3 |  <img src="./data/Lena_convFilter_3%2C1.png"  width="40%" height="40%">
 4,4,4,4,4<br>4,4,4,4,4<br>4,4,1,4,4<br>4,4,4,4,4<br>4,4,4,4,4 |  <img src="./data/Lena_convFilter_4%2C1.png"  width="40%" height="40%">
 
+## How to run
+Before run the code and compile the code, please make sure FreeImage dependency has already installed.
+
+Just execute `run.sh`, it will compile and run the program, even convert final result to PNG files!
 
 ## Code Organization
 
