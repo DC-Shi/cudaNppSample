@@ -3,9 +3,22 @@ This is a sample code to demostrate CUDA NPP APIs. The template is from [Pascale
 
 Go to https://docs.nvidia.com/cuda/npp/group__image__filtering__functions.html for more documentation on NPP APIs.
 
+The code from NVIDIA has its own license, please check the specific license file or the header of each file.
+
 ## Project Description
 
 We demostrated a convolution based filter that transform from one image to convoluted images. Here we have a demostration of original image and convoluted image.
+
+Here you can see the different convolution kernels that act on the image:
+
+| Convolution Kernel             |  Image |
+:-------------------------:|:-------------------------:
+Original |  <img src="./data/Lena.png"  width="40%" height="40%">
+1,1,1,1,1<br>1,1,1,1,1<br>1,1,1,1,1<br>1,1,1,1,1<br>1,1,1,1,1 |  <img src="./data/Lena_convFilter_1%2C1.png"  width="40%" height="40%">
+2,2,2,2,2<br>2,2,2,2,2<br>2,2,1,2,2<br>2,2,2,2,2<br>2,2,2,2,2 |  <img src="./data/Lena_convFilter_2%2C1.png"  width="40%" height="40%">
+3,3,3,3,3<br>3,3,3,3,3<br>3,3,1,3,3<br>3,3,3,3,3<br>3,3,3,3,3 |  <img src="./data/Lena_convFilter_3%2C1.png"  width="40%" height="40%">
+4,4,4,4,4<br>4,4,4,4,4<br>4,4,1,4,4<br>4,4,4,4,4<br>4,4,4,4,4 |  <img src="./data/Lena_convFilter_4%2C1.png"  width="40%" height="40%">
+
 
 ## Code Organization
 

@@ -1,0 +1,11 @@
+
+# Compile the code
+Before compiling the code, you need to make sure you have these installed:
+libfreeimage3, libfreeimage-dev
+or, you can manually download the FreeImage image and put into the lib folder.
+
+# Convert image
+The image originally output as pgm file, which cannot open by Windows Photos by default. So I added a python script to convert pgm file into png file, which you'll see the result easier.
+The image convert tool needs:
+- Python3
+- PIL libaray
