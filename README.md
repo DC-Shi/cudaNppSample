@@ -19,6 +19,11 @@ Original |  <img src="./data/Lena.png"  width="40%" height="40%">
 3,3,3,3,3<br>3,3,3,3,3<br>3,3,1,3,3<br>3,3,3,3,3<br>3,3,3,3,3 |  <img src="./data/Lena_convFilter_3%2C1.png"  width="40%" height="40%">
 4,4,4,4,4<br>4,4,4,4,4<br>4,4,1,4,4<br>4,4,4,4,4<br>4,4,4,4,4 |  <img src="./data/Lena_convFilter_4%2C1.png"  width="40%" height="40%">
 
+As you can see, the larger value of the convolution kernel, the brighter image is.
+
+You can also try different setting or even different kernels by modifying `hostKernel` value in `src/convFilterNPP.cpp`.
+
+
 ## How to compile & run
 Before run the code and compile the code, please make sure FreeImage dependency has already installed.
 
