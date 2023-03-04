@@ -24,6 +24,7 @@ Original |  <img src="./data/Lena.png"  width="40%" height="40%">
 
 ```bin/```
 This folder should hold all binary/executable code that is built automatically or manually. Executable code should have use the .exe extension or programming language-specific extension.
+Note that I included the binary of ARM, which is supposed to run on NVIDIA Jetson TX2 platform. If you have other platform, please re-build the program by running `run.sh`
 
 ```data/```
 This folder should hold all example data in any format. If the original data is rather large or can be brought in via scripts, this can be left blank in the respository, so that it doesn't require major downloads when all that is desired is the code/structure.
@@ -45,4 +46,7 @@ This file should hold the human-readable set of instructions for installing the 
 There should be some rudimentary scripts for building your project's code in an automatic fashion.
 
 ```run.sh```
-An optional script used to run your executable code, either with or without command-line arguments.
+This script is for easy hands-on. It also included a python invokation that convert images to PNG format.
+
+```ConvertImageToPng.py```
+Python script that convert image to PNG.
