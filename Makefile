@@ -277,7 +277,7 @@ ALL_LDFLAGS += $(addprefix -Xlinker ,$(LDFLAGS))
 ALL_LDFLAGS += $(addprefix -Xlinker ,$(EXTRA_LDFLAGS))
 
 # Common includes and paths for CUDA
-INCLUDES  := -I./Common
+INCLUDES  := -I./lib
 LIBRARIES :=
 
 ################################################################################
@@ -303,9 +303,9 @@ endif
 
 #ALL_CCFLAGS += --threads 0
 
-INCLUDES += -I./Common/UtilNPP -I./Common/FreeImage/include
+INCLUDES += -I./lib/UtilNPP -I./lib/FreeImage/include
 
-LIBRARIES += -L./Common/FreeImage/lib/x64 -L./Common/FreeImage/lib/$(TARGET_OS) -L./Common/FreeImage/lib/$(TARGET_OS)/$(TARGET_ARCH) -lnppisu_static -lnppif_static -lnppc_static -lculibos -lfreeimage
+LIBRARIES += -L./lib/FreeImage/lib/x64 -L./lib/FreeImage/lib/$(TARGET_OS) -L./lib/FreeImage/lib/$(TARGET_OS)/$(TARGET_ARCH) -lnppisu_static -lnppif_static -lnppc_static -lculibos -lfreeimage
 
 # Remove LDFLAGS since its value is -m64 which is also defined in ALL_CCFLAGS
 # Attempt to compile a minimal application linked against FreeImage. If a.out exists, FreeImage is properly set up.
