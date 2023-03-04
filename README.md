@@ -17,6 +17,7 @@ This folder should hold all example data in any format. If the original data is 
 
 ```lib/```
 Any libraries that are not installed via the Operating System-specific package manager should be placed here, so that it is easier for inclusion/linking.
+Note that in order to reduce the code size, I didn't include the FreeImage library here. You can get the library through the Internet.
 
 ```src/```
 The source code should be placed here in a hierarchical fashion, as appropriate.
